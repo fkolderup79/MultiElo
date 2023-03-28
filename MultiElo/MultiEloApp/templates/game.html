@@ -1,0 +1,313 @@
+{% load static %}
+{% block content %}
+<head>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #EEEEEE;
+}
+
+.header {
+  padding: 30px;
+  text-align: center;
+  background: #1AA6B7;
+#  color: white;
+  color: #00063F;
+  font-size: 30px;
+}
+
+.topnav {
+  overflow: hidden;
+#  background-color: #333;
+  background-color: #00063F;
+}
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: #00063F;
+}
+
+.topnav a.active {
+#  background-color: #04AA6D;
+  background-color: #1AA6B7;
+  color: white;
+}
+</style>
+  </head>
+
+<div class="header">
+  <h1><b>Multiway Game Rating</b></h1>
+</div>
+
+<div class="topnav">
+  <a href="/">Home</a>
+  <a class="active" href="/game">My Game</a>
+  <a href="/faq">FAQ</a>
+  <a href="/about">About</a>
+</div>
+
+
+<div style="padding-left:16px">
+  <br>
+
+    <h4>Download Template or Use Existing Template</h4>
+    <a href="{% static 'template.xlsx' download='template.xlsx' %}">
+        <button class='btn btn-secondary' type="submit">Download</button>
+    </a>
+
+    <p></p>
+
+    <h4>Upload Template to see Game Rating</h4>
+    <form class='btn btn-secondary' method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="document">
+        <button class='btn btn-secondary' type="submit" name="Upload">Upload File</button>
+    </form>
+
+</div>
+
+  <div id="container" style="width: 100%;">
+    <canvas id="line-chart"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <script>
+
+    var config = {
+      type: 'line',
+      data: {
+        labels: {{ labels }},
+        datasets: [
+        {% if graph_count >= 1 %}
+        {
+            data: {{ data1 }},
+            label: "Player 1",
+            borderColor: "#3e95cd",
+            fill: false,
+            tension: 0
+          },
+          {% endif %}
+          {% if graph_count >= 2 %}
+          {
+            data: {{ data2 }},
+            label: "Player 2",
+            borderColor: "#8e5ea2",
+            fill: false,
+            tension: 0
+          },
+          {% endif %}
+          {% if graph_count >= 3 %}
+          {
+            data: {{ data3 }},
+            label: "Player 3",
+            borderColor: "#3cba9f",
+            fill: false,
+            tension: 0
+          },
+          {% endif %}
+          {% if graph_count >= 4 %}
+          {
+            data: {{ data4 }},
+            label: "Player 4",
+            borderColor: "#acc236",
+            fill: false,
+            tension: 0
+          },
+          {% endif %}
+          {% if graph_count >= 5 %}
+          {
+            data: {{ data5 }},
+            label: "Player 5",
+            borderColor: "#d23ea7",
+            fill: false,
+            tension: 0
+          },
+          {% endif %}
+          {% if graph_count >= 6 %}
+          {
+            data: {{ data6 }},
+            label: "Player 6",
+            borderColor: "#ff5e63",
+            fill: false,
+            tension: 0
+          },
+          {% endif %}
+          {% if graph_count >= 7 %}
+          {
+            data: {{ data7 }},
+            label: "Player 7",
+            borderColor: "#efa72f",
+            fill: false,
+            tension: 0
+          },
+          {% endif %}
+          {% if graph_count >= 8 %}
+          {
+            data: {{ data8 }},
+            label: "Player 8",
+            borderColor: "#9BD0F5",
+            fill: false,
+            tension: 0
+          },
+          {% endif %}
+          {% if graph_count >= 9 %}
+          {
+            data: {{ data9 }},
+            label: "Player 9",
+            borderColor: "#FFB1C1",
+            fill: false,
+            tension: 0,
+            hidden: false
+          },
+          {% endif %}
+          {% if graph_count >= 10 %}
+          {
+            data: {{ data10 }},
+            label: "Player 10",
+            borderColor: "#58595b",
+            fill: false,
+            tension: 0
+      }
+      {% endif %}
+    ]
+  },
+    };
+
+    window.onload = function() {
+      var ctx = document.getElementById('line-chart').getContext('2d');
+      window.myPie = new Chart(ctx, config);
+    };
+
+  </script>
+
+<body>
+
+<form action = '' method=POST>
+      {% csrf_token %}
+<input type="hidden" name="graph_data" value="{{ graph_data }}">
+<input type="hidden" name="table_data" value="{{ table_data }}">
+<button class='btn btn-secondary' type="submit" name="Graph">Update Graph</button>
+
+    <table class="table table-striped table-hover table-bordered">
+        <th>Name</th>
+        <th>Graph</th>
+        <th>Graph Label</th>
+        <th>Games</th>
+        <th>Current Elo</th>
+        <th>Average Elo</th>
+        <th>High Elo</th>
+        <th>Low Elo</th>
+        <th>Wins</th>
+        <th>Win %</th>
+        <th>In Points</th>
+        <th>Points %</th>
+        <th>Position %</th>
+
+        {% for key, values in table.items%}
+        <tr>
+            {% for v in values %}
+                {% if v == '&FlagSet&' %}
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" checked="checked" value={{key}} name="boxes">
+                        </div>
+                    </td>
+                {% elif v == '&FlagNot&' %}
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" value={{key}} name="boxes">
+                        </div>
+                    </td>
+                {% else %}
+                    <td>{{v}}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <table class="table table-striped table-hover table-bordered">
+        <th>Game ID</th>
+        <th>Date</th>
+        <th>Count</th>
+        <th>Distribution</th>
+        {% if pos_count >= 1 %}
+            <th>Position 1</th>
+        {% endif %}
+        {% if pos_count >= 2 %}
+            <th>Position 2</th>
+        {% endif %}
+        {% if pos_count >= 3 %}
+            <th>Position 3</th>
+        {% endif %}
+        {% if pos_count >= 4 %}
+            <th>Position 4</th>
+        {% endif %}
+        {% if pos_count >= 5 %}
+            <th>Position 5</th>
+        {% endif %}
+        {% if pos_count >= 6 %}
+            <th>Position 6</th>
+        {% endif %}
+        {% if pos_count >= 7 %}
+            <th>Position 7</th>
+        {% endif %}
+        {% if pos_count >= 8 %}
+            <th>Position 8</th>
+        {% endif %}
+        {% if pos_count >= 9 %}
+            <th>Position 9</th>
+        {% endif %}
+        {% if pos_count >= 10 %}
+            <th>Position 10</th>
+        {% endif %}
+        {% if pos_count >= 11 %}
+            <th>Position 11</th>
+        {% endif %}
+        {% if pos_count >= 12 %}
+            <th>Position 12</th>
+        {% endif %}
+        {% if pos_count >= 13 %}
+            <th>Position 13</th>
+        {% endif %}
+        {% if pos_count >= 14 %}
+            <th>Position 14</th>
+        {% endif %}
+        {% if pos_count >= 15 %}
+            <th>Position 15</th>
+        {% endif %}
+        {% if pos_count >= 16 %}
+            <th>Position 16</th>
+        {% endif %}
+        {% for key, values in table_game.items%}
+        <tr>
+            <td>{{key}}</td>
+            {% for v in values %}
+                <td>{{v}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+
+    </body>
+
+<input type="hidden" name="table_data" value="{{ table_data }}">
+<input type="hidden" name="graph_data" value="{{ graph_data }}">
+<input type="hidden" name="table_game" value="{{ table_game }}">
+<input type="hidden" name="t_result" value="{{ t_result }}">
+
+{% endblock %}
